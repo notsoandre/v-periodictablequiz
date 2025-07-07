@@ -1,0 +1,156 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodic Table Quiz</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      background: #1e1e2f;
+      color: #ffffff;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #e0bbff
+    }
+    .question {
+      font-size: 1.4em;
+      margin: 20px 0;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button.option {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #7c3aed;
+      transition: background-color 0.2s ease;
+    }
+    button.option:hover {
+      background-color: #6b21a8;
+    }
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .score {
+      margin-top: 10px;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4c1d95;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<h1>vineet's super cool periodic table practice</h1>
+<div class="question" id="questionText">leekor...</div>
+<div class="options" id="optionsContainer"></div>
+<div class="feedback" id="feedbackText"></div>
+<div class="score" id="scoreText"></div>
+<button id="nextBtn" onclick="loadNextQuestion()">Next</button>
+<script>
+  const elements = [{"name": "Hydrogen", "symbol": "H"}, {"name": "Helium", "symbol": "He"}, {"name": "Lithium", "symbol": "Li"}, {"name": "Beryllium", "symbol": "Be"}, {"name": "Boron", "symbol": "B"}, {"name": "Carbon", "symbol": "C"}, {"name": "Nitrogen", "symbol": "N"}, {"name": "Oxygen", "symbol": "O"}, {"name": "Fluorine", "symbol": "F"}, {"name": "Neon", "symbol": "Ne"}, {"name": "Sodium", "symbol": "Na"}, {"name": "Magnesium", "symbol": "Mg"}, {"name": "Aluminum", "symbol": "Al"}, {"name": "Silicon", "symbol": "Si"}, {"name": "Phosphorus", "symbol": "P"}, {"name": "Sulfur", "symbol": "S"}, {"name": "Chlorine", "symbol": "Cl"}, {"name": "Argon", "symbol": "Ar"}, {"name": "Potassium", "symbol": "K"}, {"name": "Calcium", "symbol": "Ca"}, {"name": "Scandium", "symbol": "Sc"}, {"name": "Titanium", "symbol": "Ti"}, {"name": "Vanadium", "symbol": "V"}, {"name": "Chromium", "symbol": "Cr"}, {"name": "Manganese", "symbol": "Mn"}, {"name": "Iron", "symbol": "Fe"}, {"name": "Cobalt", "symbol": "Co"}, {"name": "Nickel", "symbol": "Ni"}, {"name": "Copper", "symbol": "Cu"}, {"name": "Zinc", "symbol": "Zn"}, {"name": "Gallium", "symbol": "Ga"}, {"name": "Germanium", "symbol": "Ge"}, {"name": "Arsenic", "symbol": "As"}, {"name": "Selenium", "symbol": "Se"}, {"name": "Bromine", "symbol": "Br"}, {"name": "Krypton", "symbol": "Kr"}, {"name": "Rubidium", "symbol": "Rb"}, {"name": "Strontium", "symbol": "Sr"}, {"name": "Yttrium", "symbol": "Y"}, {"name": "Zirconium", "symbol": "Zr"}, {"name": "Niobium", "symbol": "Nb"}, {"name": "Molybdenum", "symbol": "Mo"}, {"name": "Technetium", "symbol": "Tc"}, {"name": "Ruthenium", "symbol": "Ru"}, {"name": "Rhodium", "symbol": "Rh"}, {"name": "Palladium", "symbol": "Pd"}, {"name": "Silver", "symbol": "Ag"}, {"name": "Cadmium", "symbol": "Cd"}, {"name": "Indium", "symbol": "In"}, {"name": "Tin", "symbol": "Sn"}, {"name": "Antimony", "symbol": "Sb"}, {"name": "Tellurium", "symbol": "Te"}, {"name": "Iodine", "symbol": "I"}, {"name": "Xenon", "symbol": "Xe"}, {"name": "Cesium", "symbol": "Cs"}, {"name": "Barium", "symbol": "Ba"}, {"name": "Lanthanum", "symbol": "La"}, {"name": "Cerium", "symbol": "Ce"}, {"name": "Praseodymium", "symbol": "Pr"}, {"name": "Neodymium", "symbol": "Nd"}, {"name": "Promethium", "symbol": "Pm"}, {"name": "Samarium", "symbol": "Sm"}, {"name": "Europium", "symbol": "Eu"}, {"name": "Gadolinium", "symbol": "Gd"}, {"name": "Terbium", "symbol": "Tb"}, {"name": "Dysprosium", "symbol": "Dy"}, {"name": "Holmium", "symbol": "Ho"}, {"name": "Erbium", "symbol": "Er"}, {"name": "Thulium", "symbol": "Tm"}, {"name": "Ytterbium", "symbol": "Yb"}, {"name": "Lutetium", "symbol": "Lu"}, {"name": "Hafnium", "symbol": "Hf"}, {"name": "Tantalum", "symbol": "Ta"}, {"name": "Tungsten", "symbol": "W"}, {"name": "Rhenium", "symbol": "Re"}, {"name": "Osmium", "symbol": "Os"}, {"name": "Iridium", "symbol": "Ir"}, {"name": "Platinum", "symbol": "Pt"}, {"name": "Gold", "symbol": "Au"}, {"name": "Mercury", "symbol": "Hg"}, {"name": "Thallium", "symbol": "Tl"}, {"name": "Lead", "symbol": "Pb"}, {"name": "Bismuth", "symbol": "Bi"}, {"name": "Polonium", "symbol": "Po"}, {"name": "Astatine", "symbol": "At"}, {"name": "Radon", "symbol": "Rn"}, {"name": "Francium", "symbol": "Fr"}, {"name": "Radium", "symbol": "Ra"}, {"name": "Actinium", "symbol": "Ac"}, {"name": "Thorium", "symbol": "Th"}, {"name": "Protactinium", "symbol": "Pa"}, {"name": "Uranium", "symbol": "U"}, {"name": "Neptunium", "symbol": "Np"}, {"name": "Plutonium", "symbol": "Pu"}, {"name": "Americium", "symbol": "Am"}, {"name": "Curium", "symbol": "Cm"}, {"name": "Berkelium", "symbol": "Bk"}, {"name": "Californium", "symbol": "Cf"}, {"name": "Einsteinium", "symbol": "Es"}, {"name": "Fermium", "symbol": "Fm"}, {"name": "Mendelevium", "symbol": "Md"}, {"name": "Nobelium", "symbol": "No"}, {"name": "Lawrencium", "symbol": "Lr"}, {"name": "Rutherfordium", "symbol": "Rf"}, {"name": "Dubnium", "symbol": "Db"}, {"name": "Seaborgium", "symbol": "Sg"}, {"name": "Bohrium", "symbol": "Bh"}, {"name": "Hassium", "symbol": "Hs"}, {"name": "Meitnerium", "symbol": "Mt"}, {"name": "Darmstadtium", "symbol": "Ds"}, {"name": "Roentgenium", "symbol": "Rg"}, {"name": "Copernicium", "symbol": "Cn"}, {"name": "Nihonium", "symbol": "Nh"}, {"name": "Flerovium", "symbol": "Fl"}, {"name": "Moscovium", "symbol": "Mc"}, {"name": "Livermorium", "symbol": "Lv"}, {"name": "Tennessine", "symbol": "Ts"}, {"name": "Oganesson", "symbol": "Og"}];
+
+  let currentAnswer = '';
+  let currentQuestionType = '';
+  let score = 0;
+  let total = 0;
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function generateQuestion() {
+    const element = elements[Math.floor(Math.random() * elements.length)];
+    const isAskingSymbol = Math.random() < 0.5;
+    currentAnswer = isAskingSymbol ? element.symbol : element.name;
+    currentQuestionType = isAskingSymbol ? 'symbol' : 'name';
+
+    const choices = new Set();
+    choices.add(currentAnswer);
+    while (choices.size < 4) {
+      const rand = elements[Math.floor(Math.random() * elements.length)];
+      choices.add(isAskingSymbol ? rand.symbol : rand.name);
+    }
+
+    const shuffledChoices = shuffle(Array.from(choices));
+    const questionText = isAskingSymbol
+      ? `What is the symbol for ${element.name}?`
+      : `Which element has the symbol ${element.symbol}?`;
+
+    return {
+      question: questionText,
+      options: shuffledChoices,
+      answer: currentAnswer
+    };
+  }
+
+  function renderQuestion() {
+    const { question, options, answer } = generateQuestion();
+    document.getElementById('questionText').textContent = question;
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.className = 'option';
+      btn.onclick = () => handleAnswer(opt);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('feedbackText').textContent = '';
+    document.getElementById('nextBtn').style.display = 'none';
+  }
+
+  function handleAnswer(selected) {
+    const feedback = document.getElementById('feedbackText');
+    if (selected === currentAnswer) {
+      feedback.textContent = 'nice job sir. you rock';
+      score++;
+    } else {
+      feedback.textContent = `try again beefcake. the correct answer is: ${currentAnswer}`;
+    }
+    total++;
+    document.getElementById('scoreText').textContent = `Score: ${score} / ${total}`;
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    const buttons = document.querySelectorAll('button.option');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      if (btn.textContent === currentAnswer) {
+        btn.style.backgroundColor = '#90ee90';
+      } else if (btn.textContent === selected) {
+        btn.style.backgroundColor = '#f08080';
+      }
+    });
+  }
+
+  function loadNextQuestion() {
+    renderQuestion();
+  }
+
+  renderQuestion();
+</script>
+</body>
+</html>
