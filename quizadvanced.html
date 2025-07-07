@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Periodic Table Quiz</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 20px;
+      background: #1e1e2f;
+      color: #ffffff;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #e0bbff
+    }
+    .question {
+      font-size: 1.4em;
+      margin: 20px 0;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    button.option {
+      padding: 12px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      background-color: #7c3aed;
+      transition: background-color 0.2s ease;
+    }
+    button.option:hover {
+      background-color: #6b21a8;
+    }
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    .score {
+      margin-top: 10px;
+    }
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4c1d95;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      display: none;
+    }
+  
+    .progress-container {
+      background-color: #333;
+      border-radius: 5px;
+      height: 20px;
+      width: 100%;
+      margin-top: 15px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background-color: #a78bfa;
+      border-radius: 5px;
+      transition: width 0.3s ease-in-out;
+    }
+</style>
+</head>
+<body>
+<h1>vineet's super cool periodic table practice</h1>
+<div class="question" id="questionText">leekor...</div>
+<div class="options" id="optionsContainer"></div>
+<div class="feedback" id="feedbackText"></div>
+<div class="score" id="scoreText"></div>
+<div style="margin-top: 20px; text-align: center;">
+  <button id="toggleModeBtn" style="padding: 10px 20px; font-size: 1em; background-color: #9333ea; color: white; border: none; border-radius: 5px;">
+    Switch to Ions Quiz
+  </button>
+</div>
+
+<div class="progress-container">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<button id="nextBtn" onclick="loadNextQuestion()">Next</button>
+<script>
+  const elements = [{"name": "Hydrogen", "symbol": "H"}, {"name": "Helium", "symbol": "He"}, {"name": "Lithium", "symbol": "Li"}, {"name": "Beryllium", "symbol": "Be"}, {"name": "Boron", "symbol": "B"}, {"name": "Carbon", "symbol": "C"}, {"name": "Nitrogen", "symbol": "N"}, {"name": "Oxygen", "symbol": "O"}, {"name": "Fluorine", "symbol": "F"}, {"name": "Neon", "symbol": "Ne"}, {"name": "Sodium", "symbol": "Na"}, {"name": "Magnesium", "symbol": "Mg"}, {"name": "Aluminum", "symbol": "Al"}, {"name": "Silicon", "symbol": "Si"}, {"name": "Phosphorus", "symbol": "P"}, {"name": "Sulfur", "symbol": "S"}, {"name": "Chlorine", "symbol": "Cl"}, {"name": "Argon", "symbol": "Ar"}, {"name": "Potassium", "symbol": "K"}, {"name": "Calcium", "symbol": "Ca"}, {"name": "Scandium", "symbol": "Sc"}, {"name": "Titanium", "symbol": "Ti"}, {"name": "Vanadium", "symbol": "V"}, {"name": "Chromium", "symbol": "Cr"}, {"name": "Manganese", "symbol": "Mn"}, {"name": "Iron", "symbol": "Fe"}, {"name": "Cobalt", "symbol": "Co"}, {"name": "Nickel", "symbol": "Ni"}, {"name": "Copper", "symbol": "Cu"}, {"name": "Zinc", "symbol": "Zn"}, {"name": "Gallium", "symbol": "Ga"}, {"name": "Germanium", "symbol": "Ge"}, {"name": "Arsenic", "symbol": "As"}, {"name": "Selenium", "symbol": "Se"}, {"name": "Bromine", "symbol": "Br"}, {"name": "Krypton", "symbol": "Kr"}, {"name": "Rubidium", "symbol": "Rb"}, {"name": "Strontium", "symbol": "Sr"}, {"name": "Yttrium", "symbol": "Y"}, {"name": "Zirconium", "symbol": "Zr"}, {"name": "Niobium", "symbol": "Nb"}, {"name": "Molybdenum", "symbol": "Mo"}, {"name": "Technetium", "symbol": "Tc"}, {"name": "Ruthenium", "symbol": "Ru"}, {"name": "Rhodium", "symbol": "Rh"}, {"name": "Palladium", "symbol": "Pd"}, {"name": "Silver", "symbol": "Ag"}, {"name": "Cadmium", "symbol": "Cd"}, {"name": "Indium", "symbol": "In"}, {"name": "Tin", "symbol": "Sn"}, {"name": "Antimony", "symbol": "Sb"}, {"name": "Tellurium", "symbol": "Te"}, {"name": "Iodine", "symbol": "I"}, {"name": "Xenon", "symbol": "Xe"}, {"name": "Cesium", "symbol": "Cs"}, {"name": "Barium", "symbol": "Ba"}, {"name": "Lanthanum", "symbol": "La"}, {"name": "Cerium", "symbol": "Ce"}, {"name": "Praseodymium", "symbol": "Pr"}, {"name": "Neodymium", "symbol": "Nd"}, {"name": "Promethium", "symbol": "Pm"}, {"name": "Samarium", "symbol": "Sm"}, {"name": "Europium", "symbol": "Eu"}, {"name": "Gadolinium", "symbol": "Gd"}, {"name": "Terbium", "symbol": "Tb"}, {"name": "Dysprosium", "symbol": "Dy"}, {"name": "Holmium", "symbol": "Ho"}, {"name": "Erbium", "symbol": "Er"}, {"name": "Thulium", "symbol": "Tm"}, {"name": "Ytterbium", "symbol": "Yb"}, {"name": "Lutetium", "symbol": "Lu"}, {"name": "Hafnium", "symbol": "Hf"}, {"name": "Tantalum", "symbol": "Ta"}, {"name": "Tungsten", "symbol": "W"}, {"name": "Rhenium", "symbol": "Re"}, {"name": "Osmium", "symbol": "Os"}, {"name": "Iridium", "symbol": "Ir"}, {"name": "Platinum", "symbol": "Pt"}, {"name": "Gold", "symbol": "Au"}, {"name": "Mercury", "symbol": "Hg"}, {"name": "Thallium", "symbol": "Tl"}, {"name": "Lead", "symbol": "Pb"}, {"name": "Bismuth", "symbol": "Bi"}, {"name": "Polonium", "symbol": "Po"}, {"name": "Astatine", "symbol": "At"}, {"name": "Radon", "symbol": "Rn"}, {"name": "Francium", "symbol": "Fr"}, {"name": "Radium", "symbol": "Ra"}, {"name": "Actinium", "symbol": "Ac"}, {"name": "Thorium", "symbol": "Th"}, {"name": "Protactinium", "symbol": "Pa"}, {"name": "Uranium", "symbol": "U"}, {"name": "Neptunium", "symbol": "Np"}, {"name": "Plutonium", "symbol": "Pu"}, {"name": "Americium", "symbol": "Am"}, {"name": "Curium", "symbol": "Cm"}, {"name": "Berkelium", "symbol": "Bk"}, {"name": "Californium", "symbol": "Cf"}, {"name": "Einsteinium", "symbol": "Es"}, {"name": "Fermium", "symbol": "Fm"}, {"name": "Mendelevium", "symbol": "Md"}, {"name": "Nobelium", "symbol": "No"}, {"name": "Lawrencium", "symbol": "Lr"}, {"name": "Rutherfordium", "symbol": "Rf"}, {"name": "Dubnium", "symbol": "Db"}, {"name": "Seaborgium", "symbol": "Sg"}, {"name": "Bohrium", "symbol": "Bh"}, {"name": "Hassium", "symbol": "Hs"}, {"name": "Meitnerium", "symbol": "Mt"}, {"name": "Darmstadtium", "symbol": "Ds"}, {"name": "Roentgenium", "symbol": "Rg"}, {"name": "Copernicium", "symbol": "Cn"}, {"name": "Nihonium", "symbol": "Nh"}, {"name": "Flerovium", "symbol": "Fl"}, {"name": "Moscovium", "symbol": "Mc"}, {"name": "Livermorium", "symbol": "Lv"}, {"name": "Tennessine", "symbol": "Ts"}, {"name": "Oganesson", "symbol": "Og"}];
+
+const ions = [
+    { name: "Hydrogen", symbol: "H", charge: "+1" },
+    { name: "Lithium", symbol: "Li", charge: "+1" },
+    { name: "Sodium", symbol: "Na", charge: "+1" },
+    { name: "Potassium", symbol: "K", charge: "+1" },
+    { name: "Chloride", symbol: "Cl", charge: "-1" },
+    { name: "Bromide", symbol: "Br", charge: "-1" },
+    { name: "Fluoride", symbol: "F", charge: "-1" },
+    { name: "Iodide", symbol: "I", charge: "-1" },
+    { name: "Beryllium", symbol: "Be", charge: "+2" },
+    { name: "Magnesium", symbol: "Mg", charge: "+2" },
+    { name: "Calcium", symbol: "Ca", charge: "+2" },
+    { name: "Barium", symbol: "Ba", charge: "+2" },
+    { name: "Oxide", symbol: "O", charge: "-2" },
+    { name: "Sulfide", symbol: "S", charge: "-2" },
+    { name: "Boron", symbol: "B", charge: "+3" },
+    { name: "Aluminum", symbol: "Al", charge: "+3" },
+    { name: "Arsenic", symbol: "As", charge: "+3" },
+    { name: "Nitride", symbol: "N", charge: "-3" },
+    { name: "Phosphide", symbol: "P", charge: "-3" },
+    { name: "Carbon", symbol: "C", charge: "+4" },
+    { name: "Silicon", symbol: "Si", charge: "+4" },
+    { name: "Helium", symbol: "He", charge: "0" },
+    { name: "Neon", symbol: "Ne", charge: "0" },
+    { name: "Argon", symbol: "Ar", charge: "0" },
+    { name: "Krypton", symbol: "Kr", charge: "0" },
+    { name: "Xenon", symbol: "Xe", charge: "0" },
+    { name: "Iron (II)", symbol: "Fe", charge: "+2" },
+    { name: "Iron (III)", symbol: "Fe", charge: "+3" },
+    { name: "Cobalt (II)", symbol: "Co", charge: "+2" },
+    { name: "Cobalt (III)", symbol: "Co", charge: "+3" },
+    { name: "Nickel (II)", symbol: "Ni", charge: "+2" },
+    { name: "Nickel (III)", symbol: "Ni", charge: "+3" },
+    { name: "Copper (I)", symbol: "Cu", charge: "+1" },
+    { name: "Copper (II)", symbol: "Cu", charge: "+2" },
+    { name: "Lead (II)", symbol: "Pb", charge: "+2" },
+    { name: "Lead (IV)", symbol: "Pb", charge: "+4" },
+    { name: "Tin (II)", symbol: "Sn", charge: "+2" },
+    { name: "Tin (IV)", symbol: "Sn", charge: "+4" },
+    { name: "Silver", symbol: "Ag", charge: "+1" },
+    { name: "Zinc", symbol: "Zn", charge: "+2" },
+    { name: "Mercury", symbol: "Hg", charge: "+2" },
+    { name: "Nitrate", symbol: "NO3", charge: "-1" },
+    { name: "Carbonate", symbol: "CO3", charge: "-2" },
+    { name: "Chlorate", symbol: "ClO3", charge: "-1" },
+    { name: "Sulfate", symbol: "SO4", charge: "-2" },
+    { name: "Phosphate", symbol: "PO4", charge: "-3" },
+    { name: "Chromate", symbol: "CrO4", charge: "-2" },
+    { name: "Hydroxide", symbol: "OH", charge: "-1" },
+    { name: "Acetate", symbol: "C2H3O2", charge: "-1" },
+    { name: "Ammonium", symbol: "NH4", charge: "+1" }
+  ];
+
+  let currentAnswer = '';
+  let currentQuestionType = '';
+  let score = 0;
+  let total = 0;
+let quizMode = 'elements'; // 'elements' or 'ions'
+
+  document.getElementById('toggleModeBtn').addEventListener('click', () => {
+    quizMode = quizMode === 'elements' ? 'ions' : 'elements';
+    document.getElementById('toggleModeBtn').textContent = quizMode === 'elements' ? 'Switch to Ions Quiz' : 'Switch to Elements Quiz';
+    seenElements.clear();
+    score = 0;
+    total = 0;
+    document.getElementById('scoreText').textContent = 'Score: 0 / 0';
+    updateProgress();
+    renderQuestion();
+  });
+const progressBar = document.getElementById('progressBar');
+    const updateProgress = () => {
+      const progress = (seenElements.size / elements.length) * 100;
+      progressBar.style.width = `${progress.toFixed(1)}%`;
+    };
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  let seenElements = new Set();
+
+  
+  function generateQuestion() {
+    const isAskingSymbol = Math.random() < 0.5;
+    const sourceList = quizMode === 'ions' ? ions : elements;
+
+    const remaining = sourceList.filter(el => {
+      return !seenElements.has(isAskingSymbol ? el.symbol : el.name);
+    });
+
+    if (remaining.length === 0) {
+      alert("🎉 You've seen all " + sourceList.length + " items! Quiz will now restart.");
+      seenElements.clear();
+      return generateQuestion();
+    }
+
+    const item = remaining[Math.floor(Math.random() * remaining.length)];
+    currentAnswer = isAskingSymbol ? item.symbol : item.name;
+    currentQuestionType = isAskingSymbol ? 'symbol' : 'name';
+    seenElements.add(currentAnswer);
+
+    const choices = new Set();
+    choices.add(currentAnswer);
+    while (choices.size < 4) {
+      const rand = sourceList[Math.floor(Math.random() * sourceList.length)];
+      choices.add(isAskingSymbol ? rand.symbol : rand.name);
+    }
+
+    const shuffledChoices = shuffle(Array.from(choices));
+    const questionText = isAskingSymbol
+      ? `What is the symbol for ${item.name}?`
+      : `Which item has the symbol ${item.symbol}?`;
+
+    return {
+      question: questionText,
+      options: shuffledChoices,
+      answer: currentAnswer
+    };
+  }
+    
+
+  function renderQuestion() {
+    const { question, options, answer } = generateQuestion();
+    document.getElementById('questionText').textContent = question;
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.textContent = opt;
+      btn.className = 'option';
+      btn.onclick = () => handleAnswer(opt);
+      optionsContainer.appendChild(btn);
+    });
+
+    document.getElementById('feedbackText').textContent = '';
+    document.getElementById('nextBtn').style.display = 'none';
+  }
+
+  function handleAnswer(selected) {
+    const feedback = document.getElementById('feedbackText');
+    if (selected === currentAnswer) {
+      feedback.textContent = 'nice job sir. you rock';
+      score++;
+    } else {
+      feedback.textContent = `try again beefcake. the correct answer is: ${currentAnswer}`;
+    }
+    total++;
+    document.getElementById('scoreText').textContent = `Score: ${score} / ${total}`;
+    document.getElementById('nextBtn').style.display = 'inline-block';
+
+    const buttons = document.querySelectorAll('button.option');
+    buttons.forEach(btn => {
+      btn.disabled = true;
+      if (btn.textContent === currentAnswer) {
+        btn.style.backgroundColor = '#90ee90';
+      } else if (btn.textContent === selected) {
+        btn.style.backgroundColor = '#f08080';
+      }
+    });
+  }
+
+  function loadNextQuestion() {
+    renderQuestion();
+updateProgress();
+  }
+
+  renderQuestion();
+updateProgress();
+</script>
+</body>
+</html>
